@@ -46,7 +46,7 @@ func TestWrapWithoutResponse(t *testing.T) {
 	}
 	wrapErr := httperr.NewError(originalErr, redactor, originalReq, nil)
 
-	expectedStr := `GET https://daaku.org/bar/ error hello 42`
+	expectedStr := `GET https://daaku.org/bar/ failed with hello 42`
 	actualStr := wrapErr.Error()
 	if actualStr != expectedStr {
 		t.Fatalf(`was expecting "%s" but got "%s"`, expectedStr, actualStr)
@@ -80,7 +80,7 @@ func TestWrapWithResponse(t *testing.T) {
 	}
 	wrapErr := httperr.NewError(originalErr, redactor, originalReq, originalRes)
 
-	expectedStr := `GET https://daaku.org/bar/ got Bad Gateway error hello 42`
+	expectedStr := `GET https://daaku.org/bar/ got Bad Gateway failed with hello 42`
 	actualStr := wrapErr.Error()
 	if actualStr != expectedStr {
 		t.Fatalf(`was expecting "%s" but got "%s"`, expectedStr, actualStr)

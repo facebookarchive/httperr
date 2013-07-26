@@ -79,7 +79,7 @@ func (e *wrapError) Error() string {
 		fmt.Fprintf(&buf, " got %s", e.response.Status)
 	}
 
-	fmt.Fprintf(&buf, " error %s", e.redacter.Redact(e.actual.Error()))
+	fmt.Fprintf(&buf, " failed with %s", e.redacter.Redact(e.actual.Error()))
 	return buf.String()
 }
 
