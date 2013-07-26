@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"fmt"
 	"net/http"
+	"strings"
 )
 
 // Wraps another error.
@@ -30,14 +31,14 @@ type Error interface {
 }
 
 // Pass-thru to redact sensitive information from an error.
-type Redacter interface {
+type Redactor interface {
 	// This will redact known sensitive information from the given string.
 	Redact(s string) string
 }
 
-// Wrap an Error along with the associated request & response. The Redacter
+// Wrap an Error along with the associated request & response. The Redactor
 // will also be applied to the final Error string.
-func WrapError(e error, r Redacter, req *http.Request, res *http.Response) Error {
+func NewError(e error, r Redactor, req *http.Request, res *http.Response) Error {
 	return &wrapError{
 		actual:   e,
 		redacter: r,
@@ -50,7 +51,7 @@ type wrapError struct {
 	actual   error
 	request  *http.Request
 	response *http.Response
-	redacter Redacter
+	redacter Redactor
 }
 
 func (e *wrapError) Request() *http.Request {
@@ -89,7 +90,7 @@ func (e *wrapError) Error() string {
 
 type redactError struct {
 	actual   error
-	redacter Redacter
+	redacter Redactor
 }
 
 func (e *redactError) Actual() error {
@@ -100,7 +101,33 @@ func (e *redactError) Error() string {
 	return e.redacter.Redact(e.actual.Error())
 }
 
-// Apply the Redacter to the given error.
-func RedactError(e error, r Redacter) ErrorWrapper {
+// Apply the Redactor to the given error.
+func RedactError(e error, r Redactor) ErrorWrapper {
 	return &redactError{actual: e, redacter: r}
+}
+
+type stringRedact struct {
+	old, nu string
+}
+
+func (r *stringRedact) Redact(s string) string {
+	return strings.Replace(s, r.old, r.nu, -1)
+}
+
+// A simple string replacement Redactor.
+func RedactString(old, nu string) Redactor {
+	return &stringRedact{old: old, nu: nu}
+}
+
+type nilRedact struct{}
+
+func (r nilRedact) Redact(s string) string {
+	return s
+}
+
+var nilR nilRedact
+
+// A no-op Redactor.
+func RedactNoOp() Redactor {
+	return nilR
 }
