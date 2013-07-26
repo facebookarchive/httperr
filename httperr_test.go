@@ -76,12 +76,11 @@ func TestWrapWithResponse(t *testing.T) {
 		},
 	}
 	originalRes := &http.Response{
-		StatusCode: http.StatusBadGateway,
-		Status:     http.StatusText(http.StatusBadGateway),
+		Status: http.StatusText(http.StatusBadGateway),
 	}
 	wrapErr := httperr.NewError(originalErr, redactor, originalReq, originalRes)
 
-	expectedStr := `GET https://daaku.org/bar/ got 502 Bad Gateway error hello 42`
+	expectedStr := `GET https://daaku.org/bar/ got Bad Gateway error hello 42`
 	actualStr := wrapErr.Error()
 	if actualStr != expectedStr {
 		t.Fatalf(`was expecting "%s" but got "%s"`, expectedStr, actualStr)

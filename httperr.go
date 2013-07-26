@@ -76,12 +76,7 @@ func (e *wrapError) Error() string {
 	)
 
 	if e.response != nil {
-		fmt.Fprintf(
-			&buf,
-			" got %d %s",
-			e.response.StatusCode,
-			e.response.Status,
-		)
+		fmt.Fprintf(&buf, " got %s", e.response.Status)
 	}
 
 	fmt.Fprintf(&buf, " error %s", e.redacter.Redact(e.actual.Error()))
