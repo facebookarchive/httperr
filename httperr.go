@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"fmt"
 	"net/http"
+	"regexp"
 )
 
 // Wraps another error.
@@ -112,4 +113,17 @@ var nilR nilRedact
 // A no-op Redactor.
 func RedactNoOp() Redactor {
 	return nilR
+}
+
+type regexpRedactor struct {
+	regexp *regexp.Regexp
+	repl   string
+}
+
+func (r *regexpRedactor) Replace(s string) string {
+	return r.regexp.ReplaceAllString(s, r.repl)
+}
+
+func RedactRegexp(re *regexp.Regexp, repl string) Redactor {
+	return &regexpRedactor{regexp: re, repl: repl}
 }

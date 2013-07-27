@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"regexp"
 	"strings"
 	"testing"
 
@@ -107,5 +108,19 @@ func TestRedactNoOp(t *testing.T) {
 	t.Parallel()
 	if httperr.RedactNoOp().Replace(answer) != answer {
 		t.Fatal("no op did something")
+	}
+}
+
+func TestRedactRegexp(t *testing.T) {
+	t.Parallel()
+	re := regexp.MustCompile("(access_token|client_secret)=([^&]*)")
+	repl := "$1=-- XX -- REDACTED -- XX --"
+	redactor := httperr.RedactRegexp(re, repl)
+	orig := "foo&access_token=1"
+	expected := "foo&access_token=-- XX -- REDACTED -- XX --"
+	actual := redactor.Replace(orig)
+
+	if actual != expected {
+		t.Fatalf(`expected "%s" actual "%s"`, expected, actual)
 	}
 }
