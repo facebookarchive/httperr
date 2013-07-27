@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strings"
 	"testing"
 
 	"github.com/daaku/go.httperr"
@@ -12,7 +13,7 @@ import (
 const question = "world"
 const answer = "42"
 
-var redactor = httperr.RedactString(question, answer)
+var redactor = strings.NewReplacer(question, answer)
 
 func TestRedactError(t *testing.T) {
 	t.Parallel()
@@ -104,7 +105,7 @@ func TestWrapWithResponse(t *testing.T) {
 
 func TestRedactNoOp(t *testing.T) {
 	t.Parallel()
-	if httperr.RedactNoOp().Redact(answer) != answer {
+	if httperr.RedactNoOp().Replace(answer) != answer {
 		t.Fatal("no op did something")
 	}
 }
