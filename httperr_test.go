@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/daaku/go.httperr"
+	"github.com/ParsePlatform/go.httperr"
 )
 
 const question = "world"
